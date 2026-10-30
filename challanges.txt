@@ -1,0 +1,13 @@
+This document summarizes the main challenges I encountered and the changes I made while developing the vertical line counter.
+
+1. Developing on macOS for a Windows application
+------------------------------------------------
+The assignment requested a Windows console application, but I developed the project on a Mac. My initial version used System.Drawing.Common to read image pixels. When I tried to run it on macOS, image loading failed because this library relies on Windows specific functionality in modern .NET versions.
+I looked for a cross platform image library so I could test locally without changing the intended Windows functionality. I first tried SixLabors.ImageSharp, which allowed the program to read images on my Mac, but it produced a license related warning in my development setup. I then switched to StbImageSharp, which works across macOS and Windows and avoids that licensing issue for this project.
+
+2. Reading pixels with a different library
+------------------------------------------
+Changing libraries also changed how I accessed the image data. With StbImageSharp, the decoded RGB values are stored in a one-dimensional byte array. Each pixel takes three consecutive bytes: red, green, and blue.
+To examine the middle row, I calculated its starting byte position using the row number, image width, and three bytes per pixel. The program then moves three bytes at a time to inspect each pixel from left to right.
+
+Overall, the biggest challenge was choosing an image library that worked in my macOS development environment while still producing a .NET console application suitable for Windows. The final implementation uses .NET 10 and StbImageSharp, with a simple middle-row scanning algorithm and RGB threshold check.
